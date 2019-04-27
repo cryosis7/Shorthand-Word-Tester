@@ -2,6 +2,14 @@ from tkinter import *
 from random import shuffle
 
 
+def edit_filters():
+    return
+
+
+def open_dictionary():
+    return
+
+
 def reset_dictionary():
     global dictionary
     dictionary_file = open('dictionary_filtered.txt', 'r')
@@ -25,7 +33,10 @@ def render():
 
     menu_bar = Menu(root)
     file_menu = Menu(menu_bar, tearoff=0)
+    file_menu.add_command(label="Edit Filters", command=edit_filters)
+    file_menu.add_command(label="Open Dictionary...", command=open_dictionary)
 
+    menu_bar.add_cascade(label="File", menu=file_menu)
 
     frame = Frame(root)
     instructions_lbl = Label(frame, text="Press spacebar to receive a random word", font=("Calibri", 10))
@@ -37,6 +48,7 @@ def render():
     btn.grid(column=0, row=1, pady="10")
 
     frame.place(anchor="center", relx="0.5", rely="0.4")
+    root.config(menu=menu_bar)
     root.mainloop()
 
 
