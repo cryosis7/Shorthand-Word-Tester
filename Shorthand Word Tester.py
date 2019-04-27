@@ -25,7 +25,7 @@ def render():
 
     menu_bar = Menu(root)
     file_menu = Menu(menu_bar, tearoff=0)
-    
+
 
     frame = Frame(root)
     instructions_lbl = Label(frame, text="Press spacebar to receive a random word", font=("Calibri", 10))
