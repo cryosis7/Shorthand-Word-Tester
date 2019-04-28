@@ -5,7 +5,7 @@ from random import shuffle
 def add_to_listbox(listbox, entry):
     s = entry.get()
     if s:
-        listbox.insert(END, s)
+        listbox.add_filter(END, s)
         entry.delete(0, len(s))
 
 
