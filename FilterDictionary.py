@@ -1,30 +1,14 @@
+import db_manager
 WRITE_MODE = True
 
-# Prefixes MUST be at the beginning.
-# A phrase is usually near the end but may have a extra characters like an 's' or 'ed' afterwards.
-# A suffix MUST be on the end of the word
-keys = {
-    "prefixes": [],
-    "phrases": [],
-    "suffixes": [],
-}
+filters = {}
 
 
 def set_phrases():
-    phrases_file = open('key_phrases.txt', 'r')
-    current_key = None
-
-    for line in phrases_file:
-        if line.startswith('#') or line == '\n':
-            continue
-
-        word = format_word(line)
-        if word in keys:
-            current_key = word
-            continue
-
-        if current_key in keys:
-            keys[current_key].append(word)
+    global filters
+    db = db_manager.Database()
+    filters = db.get_filters()
+    db.close()
 
 
 def format_word(word):
@@ -45,7 +29,7 @@ def write_word(word, index=None):
 
 
 def get_prefixes():
-    for prefix in keys["prefixes"]:
+    for prefix in filters[db_manager.Database.PREFIX]:
         try:
             index = dictionary.index(prefix)
             while dictionary[index].startswith(prefix):
@@ -60,14 +44,14 @@ def get_suffixes():
         formatted_word = format_word(word)
         found_word = False
 
-        for suffix in keys["suffixes"]:
+        for suffix in filters[db_manager.Database.SUFFIX]:
             if formatted_word.endswith(suffix):
                 write_word(word)
                 found_word = True
                 break
                 
         if not found_word:
-            for phrase in keys["phrases"]:
+            for phrase in filters[db_manager.Database.PHRASE]:
                 if phrase in formatted_word:
                     write_word(word)
                     break
@@ -75,7 +59,7 @@ def get_suffixes():
 
 set_phrases()
 
-out = open('dictionary_filtered.txt', 'w')
+out = open('dictionary_filtered_sql.txt', 'w')
 dictionary_file = open('dictionary_full.txt', 'r')
 
 dictionary = dictionary_file.read().split('\n')

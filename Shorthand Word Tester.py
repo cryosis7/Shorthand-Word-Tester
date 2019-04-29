@@ -62,7 +62,7 @@ def open_dictionary():
 
 def reset_dictionary():
     global dictionary
-    dictionary_file = open('dictionary_filtered.txt', 'r')
+    dictionary_file = open('dictionary_filtered_sql.txt', 'r')
     dictionary = dictionary_file.read().split('\n')
     dictionary_file.close()
     shuffle(dictionary)
