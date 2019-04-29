@@ -44,8 +44,8 @@ def create_filter_frame(parent_frame, filter_name):
     add_button = Button(new_entry_frame, text="Add", command=lambda: add_to_listbox(listbox, entry))
     entry = Entry(new_entry_frame, exportselection=0)
     entry.bind("<Return>", lambda key: add_to_listbox(listbox, entry))
-    entry.grid(column=0, columnspan=2, row=0)
-    add_button.grid(column=2, row=0, padx=10)
+    entry.grid(column=0, row=0)
+    add_button.grid(column=1, row=0, padx=10)
 
     padding_y = 5
     title_lbl.grid(column=0, row=0, pady=padding_y)
@@ -61,17 +61,23 @@ def open_filter_settings():
     settings.minsize(700, 400)
 
     main_frame = Frame(settings)
-    prefix_frame = create_filter_frame(main_frame, Database.PREFIX)
-    phrase_frame = create_filter_frame(main_frame, Database.PHRASE)
-    suffix_frame = create_filter_frame(main_frame, Database.SUFFIX)    
 
+    title_lbl = Label(main_frame, text="Add or Remove Filters", font=("Calibri", 14))
+
+    filter_frame = Frame(main_frame)
+    prefix_frame = create_filter_frame(filter_frame, Database.PREFIX)
+    phrase_frame = create_filter_frame(filter_frame, Database.PHRASE)
+    suffix_frame = create_filter_frame(filter_frame, Database.SUFFIX)
     padding_x = 25
     prefix_frame.grid(column=0, row=0, padx=padding_x)
-    Separator(main_frame, orient=VERTICAL).grid(column=1, row=0, sticky='wns')
+    Separator(filter_frame, orient=VERTICAL).grid(column=1, row=0, sticky='wns')
     phrase_frame.grid(column=1, row=0, padx=padding_x)
-    Separator(main_frame, orient=VERTICAL).grid(column=2, row=0, sticky='wns')
+    Separator(filter_frame, orient=VERTICAL).grid(column=2, row=0, sticky='wns')
     suffix_frame.grid(column=2, row=0, padx=padding_x)
-    main_frame.place(anchor="center", relx="0.5", rely="0.5")
+
+    title_lbl.grid(column=0, row=0, pady=10)
+    filter_frame.grid(column=0, row=1)
+    main_frame.place(anchor="center", relx="0.5", rely="0.45")
 
 
 def open_dictionary():
