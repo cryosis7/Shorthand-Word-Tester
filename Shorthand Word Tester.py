@@ -17,18 +17,18 @@ def delete_from_listbox(listbox):
         listbox.delete(selection[0])
     
     
-def create_filter_frame(parent_frame, filter_name):
+def create_filter_frame(parent_frame, filter_type):
     filter_frame = Frame(parent_frame)
     
-    title_lbl = Label(filter_frame, text=filter_name.capitalize())
+    title_lbl = Label(filter_frame, text=filter_type.capitalize())
 
     # Listbox with Scrollbar
     lb_frame = Frame(filter_frame)
     lb_scrollbar = Scrollbar(lb_frame)
     listbox = Listbox(lb_frame, selectmode="SINGLE", yscrollcommand=lb_scrollbar.set)
     lb_scrollbar.config(command=listbox.yview)
-    for x in range(20):
-        listbox.insert(END, "{}: {}".format(filter_name.capitalize(), x))
+    for filter_name in db.get_filters(filter_type):
+        listbox.insert(END, filter_name)
     lb_scrollbar.pack(side=RIGHT, fill=Y)
     listbox.pack(side=LEFT, fill=BOTH)
 
@@ -128,6 +128,7 @@ def render():
 
 
 dictionary = []
+db = Database()
 reset_dictionary()
 render()
 

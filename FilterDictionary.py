@@ -7,7 +7,7 @@ filters = {}
 def set_phrases():
     global filters
     db = Database()
-    filters = db.get_filters()
+    filters = db.get_all_filters()
     db.close()
 
 

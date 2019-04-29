@@ -53,7 +53,7 @@ class Database:
         self.initiate()
 
     # Returns all filters in the database as a dictionary, separated by filter type.
-    def get_filters(self):
+    def get_all_filters(self):
         filters = {
             self.PREFIX: [],
             self.PHRASE: [],
@@ -67,6 +67,15 @@ class Database:
         self.cursor.execute(sql, (self.SUFFIX,))
         filters[self.SUFFIX] = self.cursor.fetchall()
         return filters
+
+    # Returns a list of the filters that match the filter type
+    def get_filters(self, filter_type):
+        filter_list = []
+        if filter_type == self.PREFIX or filter_type == self.PHRASE or filter_type == self.SUFFIX:
+            sql = "SELECT name FROM filters WHERE type_id=(SELECT rowid FROM type WHERE name=?)"
+            self.cursor.execute(sql, (filter_type,))
+            filter_list = self.cursor.fetchall()
+        return filter_list
 
     def close(self):
         self.connection.close()
