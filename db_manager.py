@@ -22,6 +22,7 @@ class Database:
             "INSERT OR IGNORE INTO type (name) VALUES ('{}');".format(self.PREFIX, self.PHRASE, self.SUFFIX))
         self.connection.commit()
 
+    # Adds a single entry into the filters table.
     def add_filter(self, filter_name, filter_type):
         if filter_type == self.PREFIX or filter_type == self.PHRASE or filter_type == self.SUFFIX:
             sql = "SELECT name FROM filters WHERE name=? AND type_id=(SELECT rowid FROM type WHERE name=?);"
@@ -31,6 +32,7 @@ class Database:
                     (filter_name, filter_type))
                 self.connection.commit()
 
+    # Adds a list of entries into the filters table.
     def add_filters(self, filters_list, filter_type):
         if filter_type == self.PREFIX or filter_type == self.PHRASE or filter_type == self.SUFFIX:
             for filter in filters_list:
@@ -41,18 +43,12 @@ class Database:
                         (filter, filter_type))
             self.connection.commit()
 
-    def display(self):
-        self.cursor.execute("SELECT filters.name, type.name FROM filters, type WHERE filters.type_id = type.rowid;")
-        rows = self.cursor.fetchall()
-        for row in rows:
-            print(row)
-
     def clear_database(self):
         self.cursor.executescript("DROP TABLE IF EXISTS filters;"
                                   "DROP TABLE IF EXISTS type;")
         self.initiate()
 
-    # Returns all filters in the database as a dictionary, separated by filter type.
+    # Returns all filters in the database as 3 lists in a dictionary, separated by filter type.
     def get_all_filters(self):
         filters = {
             self.PREFIX: [],
@@ -76,6 +72,24 @@ class Database:
             self.cursor.execute(sql, (filter_type,))
             filter_list = self.cursor.fetchall()
         return filter_list
+
+    # Deletes a single entry from the filter
+    def delete_filter(self, filter_name, filter_type):
+        if filter_type == self.PREFIX or filter_type == self.PHRASE or filter_type == self.SUFFIX:
+            sql = "DELETE FROM filters WHERE name LIKE ? AND type_id=(SELECT rowid FROM type WHERE name LIKE ?);"
+            self.cursor.execute(sql, (filter_name, filter_type))
+            self.connection.commit()
+
+    # Will delete all filters out of the dictionary.
+    # If a filter_type is given, will delete all of that type.
+    def delete_all_filters(self, filter_type=None):
+        if filter_type is None:
+            self.cursor.execute("DELETE FROM filters")
+            self.connection.commit()
+        elif filter_type == self.PREFIX or filter_type == self.PHRASE or filter_type == self.SUFFIX:
+            sql = "DELETE FROM filters WHERE type_id=(SELECT rowid FROM type WHERE name LIKE ?);"
+            self.cursor.execute(sql, (filter_type,))
+            self.connection.commit()
 
     def close(self):
         self.connection.close()

@@ -4,18 +4,36 @@ from random import shuffle
 from db_manager import Database
 
 
-def add_to_listbox(listbox, entry):
-    s = entry.get()
-    if s:
-        listbox.add_filter(END, s)
-        entry.delete(0, len(s))
+# Takes the value from the entry box and adds it to the database
+def add_filter_from_entry(listbox, entry, filter_type):
+    text = entry.get()
+    text = ''.join([i for i in text.lower() if i.isalpha() or i == '-'])
+    if text:
+        db.add_filter(text, filter_type)
+        entry.delete(0, len(entry.get()))
+        render_listbox(listbox, filter_type)
 
 
-def delete_from_listbox(listbox):
+# Deletes the selection from the database and refreshes the listbox
+def delete_filter(listbox, filter_type):
     selection = listbox.curselection()
     if selection:
-        listbox.delete(selection[0])
-    
+        db.delete_filter(listbox.get(selection), filter_type)
+        render_listbox(listbox, filter_type)
+
+
+# Deletes all filters that match the type from the database and re-renders the listbox
+def delete_all_filters(listbox, filter_type):
+    db.delete_all_filters(filter_type)
+    render_listbox(listbox, filter_type)
+
+
+# Empties and refills a listbox with the given filter type from the database
+def render_listbox(listbox, filter_type):
+    listbox.delete(0, END)
+    for filter_name in db.get_filters(filter_type):
+        listbox.insert(END, filter_name)
+
     
 def create_filter_frame(parent_frame, filter_type):
     filter_frame = Frame(parent_frame)
@@ -27,23 +45,22 @@ def create_filter_frame(parent_frame, filter_type):
     lb_scrollbar = Scrollbar(lb_frame)
     listbox = Listbox(lb_frame, selectmode="SINGLE", yscrollcommand=lb_scrollbar.set)
     lb_scrollbar.config(command=listbox.yview)
-    for filter_name in db.get_filters(filter_type):
-        listbox.insert(END, filter_name)
     lb_scrollbar.pack(side=RIGHT, fill=Y)
     listbox.pack(side=LEFT, fill=BOTH)
+    render_listbox(listbox, filter_type)
 
     # Delete Buttons
     delete_frame = Frame(filter_frame)
-    del_btn = Button(delete_frame, text="Delete", command=lambda: delete_from_listbox(listbox))
-    del_all_btn = Button(delete_frame, text="Delete All", command=lambda: listbox.delete(0, END))
+    del_btn = Button(delete_frame, text="Delete", command=lambda: delete_filter(listbox, filter_type))
+    del_all_btn = Button(delete_frame, text="Delete All", command=lambda: delete_all_filters(listbox, filter_type))
     del_btn.grid(column=0, row=2, padx=5)
     del_all_btn.grid(column=1, row=2, padx=5)
 
     # Entry Field and Add Button
     new_entry_frame = Frame(filter_frame)
-    add_button = Button(new_entry_frame, text="Add", command=lambda: add_to_listbox(listbox, entry))
+    add_button = Button(new_entry_frame, text="Add", command=lambda: add_filter_from_entry(listbox, entry, filter_type))
     entry = Entry(new_entry_frame, exportselection=0)
-    entry.bind("<Return>", lambda key: add_to_listbox(listbox, entry))
+    entry.bind("<Return>", lambda key: add_filter_from_entry(listbox, entry, add_filter_from_entry))
     entry.grid(column=0, row=0)
     add_button.grid(column=1, row=0, padx=10)
 
@@ -57,6 +74,7 @@ def create_filter_frame(parent_frame, filter_type):
 
 def open_filter_settings():
     settings = Toplevel()
+    settings.grab_set()
     settings.title("Filter Settings")
     settings.minsize(700, 400)
 
@@ -131,5 +149,6 @@ dictionary = []
 db = Database()
 reset_dictionary()
 render()
+db.close()
 
 
