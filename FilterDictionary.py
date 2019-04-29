@@ -59,7 +59,7 @@ def get_suffixes():
 
 set_phrases()
 
-out = open('dictionary_filtered_sql.txt', 'w')
+out = open('dictionary_filtered.txt', 'w')
 dictionary_file = open('dictionary_full.txt', 'r')
 
 dictionary = dictionary_file.read().split('\n')

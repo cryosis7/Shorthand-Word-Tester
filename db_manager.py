@@ -10,11 +10,11 @@ class Database:
         self.connection = sqlite3.connect('data.db')
         self.connection.row_factory = lambda cursor, row: row[0]
         self.cursor = self.connection.cursor()
-        self.initiate()
+        # self.initiate()
 
     def initiate(self):
         self.cursor.executescript(
-            "CREATE TABLE IF NOT EXISTS type (name text NULL NULL UNIQUE);"
+            "CREATE TABLE IF NOT EXISTS type (name text NOT NULL UNIQUE);"
             "CREATE TABLE IF NOT EXISTS filters(name text NOT NULL, type_id INTEGER NOT NULL,"
             "FOREIGN KEY(type_id) REFERENCES type(rowid));"
             "INSERT OR IGNORE INTO type (name) VALUES ('{}');"
@@ -94,19 +94,6 @@ class Database:
     def close(self):
         self.connection.close()
 
-
+#
 # db = Database()
-# db.clear_database()
-# db.get_filters()
-
-# db.insert('under', db.PREFIX)
-# db.insert('logical', db.PHRASE)
-# db.insert('auto', db.PREFIX)
-# li = db.get_filters()
-# for l in li:
-#     print(l + ":")
-#     for x in li[l]:
-#         print(x)
-#     print("\n")
-# db.display()
 # db.close()
