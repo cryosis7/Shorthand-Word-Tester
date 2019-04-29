@@ -1,5 +1,7 @@
 from tkinter import *
+from tkinter.ttk import Separator
 from random import shuffle
+from db_manager import Database
 
 
 def add_to_listbox(listbox, entry):
@@ -13,46 +15,62 @@ def delete_from_listbox(listbox):
     selection = listbox.curselection()
     if selection:
         listbox.delete(selection[0])
+    
+    
+def create_filter_frame(parent_frame, filter_name):
+    filter_frame = Frame(parent_frame)
+    
+    title_lbl = Label(filter_frame, text=filter_name.capitalize())
+
+    # Listbox with Scrollbar
+    lb_frame = Frame(filter_frame)
+    lb_scrollbar = Scrollbar(lb_frame)
+    listbox = Listbox(lb_frame, selectmode="SINGLE", yscrollcommand=lb_scrollbar.set)
+    lb_scrollbar.config(command=listbox.yview)
+    for x in range(20):
+        listbox.insert(END, "{}: {}".format(filter_name.capitalize(), x))
+    lb_scrollbar.pack(side=RIGHT, fill=Y)
+    listbox.pack(side=LEFT, fill=BOTH)
+
+    # Delete Buttons
+    delete_frame = Frame(filter_frame)
+    del_btn = Button(delete_frame, text="Delete", command=lambda: delete_from_listbox(listbox))
+    del_all_btn = Button(delete_frame, text="Delete All", command=lambda: listbox.delete(0, END))
+    del_btn.grid(column=0, row=2, padx=5)
+    del_all_btn.grid(column=1, row=2, padx=5)
+
+    # Entry Field and Add Button
+    new_entry_frame = Frame(filter_frame)
+    add_button = Button(new_entry_frame, text="Add", command=lambda: add_to_listbox(listbox, entry))
+    entry = Entry(new_entry_frame, exportselection=0)
+    entry.bind("<Return>", lambda key: add_to_listbox(listbox, entry))
+    entry.grid(column=0, columnspan=2, row=0)
+    add_button.grid(column=2, row=0, padx=10)
+
+    padding_y = 5
+    title_lbl.grid(column=0, row=0, pady=padding_y)
+    lb_frame.grid(column=0, row=1, pady=padding_y)
+    delete_frame.grid(column=0, row=2, pady=padding_y)
+    new_entry_frame.grid(column=0, row=3, pady=padding_y)
+    return filter_frame
 
 
 def open_filter_settings():
     settings = Toplevel()
     settings.title("Filter Settings")
-    settings.minsize(300, 300)
+    settings.minsize(700, 400)
 
     main_frame = Frame(settings)
-    prefix_lbl = Label(main_frame, text="Prefixes")
+    prefix_frame = create_filter_frame(main_frame, Database.PREFIX)
+    phrase_frame = create_filter_frame(main_frame, Database.PHRASE)
+    suffix_frame = create_filter_frame(main_frame, Database.SUFFIX)    
 
-    # Listbox with Scrollbar
-    prefix_lb_frame = Frame(main_frame)
-    prefix_lb_scrollbar = Scrollbar(prefix_lb_frame)
-    prefix_listbox = Listbox(prefix_lb_frame, selectmode="SINGLE", yscrollcommand=prefix_lb_scrollbar.set)
-    prefix_lb_scrollbar.config(command=prefix_listbox.yview)
-    for x in range(20):
-        prefix_listbox.insert(END, "Item {}".format(x))
-    prefix_lb_scrollbar.pack(side=RIGHT, fill=Y)
-    prefix_listbox.pack(side=LEFT, fill=BOTH)
-
-    # Delete Buttons
-    delete_frame = Frame(main_frame)
-    prefix_del_btn = Button(delete_frame, text="Delete", command=lambda: delete_from_listbox(prefix_listbox))
-    prefix_del_all_btn = Button(delete_frame, text="Delete All", command=lambda: prefix_listbox.delete(0, END))
-    prefix_del_btn.grid(column=0, row=2, padx=5)
-    prefix_del_all_btn.grid(column=1, row=2, padx=5)
-
-    # Entry Field and Add Button
-    new_entry_frame = Frame(main_frame)
-    prefix_add_button = Button(new_entry_frame, text="Add", command=lambda: add_to_listbox(prefix_listbox, prefix_entry))
-    prefix_entry = Entry(new_entry_frame, exportselection=0)
-    prefix_entry.bind("<Return>", lambda x: add_to_listbox(prefix_listbox, prefix_entry))
-    prefix_entry.grid(column=0, columnspan=2, row=0)
-    prefix_add_button.grid(column=2, row=0, padx=10)
-
-    padding_y = 5
-    prefix_lbl.grid(column=0, row=0, pady=padding_y)
-    prefix_lb_frame.grid(column=0, row=1, pady=padding_y)
-    delete_frame.grid(column=0, row=2, pady=padding_y)
-    new_entry_frame.grid(column=0, row=3, pady=padding_y)
+    padding_x = 25
+    prefix_frame.grid(column=0, row=0, padx=padding_x)
+    Separator(main_frame, orient=VERTICAL).grid(column=1, row=0, sticky='wns')
+    phrase_frame.grid(column=1, row=0, padx=padding_x)
+    Separator(main_frame, orient=VERTICAL).grid(column=2, row=0, sticky='wns')
+    suffix_frame.grid(column=2, row=0, padx=padding_x)
     main_frame.place(anchor="center", relx="0.5", rely="0.5")
 
 

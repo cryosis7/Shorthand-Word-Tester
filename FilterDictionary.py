@@ -1,4 +1,4 @@
-import db_manager
+from db_manager import Database
 WRITE_MODE = True
 
 filters = {}
@@ -6,7 +6,7 @@ filters = {}
 
 def set_phrases():
     global filters
-    db = db_manager.Database()
+    db = Database()
     filters = db.get_filters()
     db.close()
 
@@ -29,7 +29,7 @@ def write_word(word, index=None):
 
 
 def get_prefixes():
-    for prefix in filters[db_manager.Database.PREFIX]:
+    for prefix in filters[Database.PREFIX]:
         try:
             index = dictionary.index(prefix)
             while dictionary[index].startswith(prefix):
@@ -44,14 +44,14 @@ def get_suffixes():
         formatted_word = format_word(word)
         found_word = False
 
-        for suffix in filters[db_manager.Database.SUFFIX]:
+        for suffix in filters[Database.SUFFIX]:
             if formatted_word.endswith(suffix):
                 write_word(word)
                 found_word = True
                 break
                 
         if not found_word:
-            for phrase in filters[db_manager.Database.PHRASE]:
+            for phrase in filters[Database.PHRASE]:
                 if phrase in formatted_word:
                     write_word(word)
                     break
