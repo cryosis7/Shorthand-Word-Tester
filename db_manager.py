@@ -91,6 +91,17 @@ class Database:
             self.cursor.execute(sql, (filter_type,))
             self.connection.commit()
 
+    # Will return an unordered list of the filtered dictionary set
+    def get_dictionary(self):
+        self.cursor.execute("SELECT * FROM dictionary_full AS d JOIN filters AS f ON ( " +
+                            "CASE f.type_id " +
+                            "WHEN 1 THEN d.word LIKE f.name || '%' " +
+                            "WHEN 2 THEN d.word LIKE '%' || f.name || '%' " +
+                            "WHEN 3 THEN d.word LIKE '%' || f.name " +
+                            "END) " +
+                            "GROUP BY d.word;")
+        return self.cursor.fetchall()
+
     def close(self):
         self.connection.close()
 
