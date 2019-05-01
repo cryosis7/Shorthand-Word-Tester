@@ -58,18 +58,18 @@ def create_filter_frame(parent_frame, filter_type):
 
     # Delete Buttons
     delete_frame = Frame(filter_frame)
-    del_btn = Button(delete_frame, text="Delete", width=7, command=lambda: delete_filter(listbox, filter_type))
+    del_btn = Button(delete_frame, text="Delete", width=7, command=lambda: delete_filter(listbox))
     del_all_btn = Button(delete_frame, text="Delete All", width=7,
-                         command=lambda: delete_all_filters(listbox, filter_type))
+                         command=lambda: listbox.delete(0, END))
     del_btn.grid(column=0, row=0, padx=10)
     del_all_btn.grid(column=1, row=0, padx=10)
 
     # Entry Field and Add Button
     new_entry_frame = Frame(filter_frame)
     add_button = Button(new_entry_frame, text="Add", width=5,
-                        command=lambda: add_filter_from_entry(listbox, entry, filter_type))
+                        command=lambda: add_filter_from_entry(listbox, entry))
     entry = Entry(new_entry_frame, exportselection=0)
-    entry.bind("<Return>", lambda key: add_filter_from_entry(listbox, entry, filter_type))
+    entry.bind("<Return>", lambda key: add_filter_from_entry(listbox, entry))
     entry.grid(column=0, row=0)
     add_button.grid(column=1, row=0, padx=10)
 
@@ -93,25 +93,18 @@ def render_listbox(listbox, filter_type):
         listbox.insert(END, filter_name)
 
 
-# Takes the value from the entry box and adds it to the database
-def add_filter_from_entry(listbox, entry, filter_type):
+# Takes the value from the entry box and adds it to the listbox
+def add_filter_from_entry(listbox, entry):
     text = entry.get()
     text = ''.join([i for i in text.lower() if i.isalpha() or i == '-'])
     if text:
-        db.add_filter(text, filter_type)
-        entry.delete(0, len(entry.get()))
-        render_listbox(listbox, filter_type)
+        entry.delete(0, END)
+        listbox.insert(END, text)
+        listbox.see(END)
 
 
-# Deletes the selection from the database and refreshes the listbox
-def delete_filter(listbox, filter_type):
+# Deletes the selection from the listbox
+def delete_filter(listbox):
     selection = listbox.curselection()
     if selection:
-        db.delete_filter(listbox.get(selection), filter_type)
-        render_listbox(listbox, filter_type)
-
-
-# Deletes all filters that match the type from the database and re-renders the listbox
-def delete_all_filters(listbox, filter_type):
-    db.delete_all_filters(filter_type)
-    render_listbox(listbox, filter_type)
+        listbox.delete(selection)
