@@ -10,9 +10,8 @@ class Database:
         self.connection = sqlite3.connect('data.db')
         self.connection.row_factory = lambda cursor, row: row[0]
         self.cursor = self.connection.cursor()
-        # self.initiate()
 
-    def initiate(self):
+    def reset_database(self):
         self.cursor.executescript(
             "CREATE TABLE IF NOT EXISTS type (name text NOT NULL UNIQUE);"
             "CREATE TABLE IF NOT EXISTS filters(name text NOT NULL, type_id INTEGER NOT NULL,"
@@ -35,18 +34,18 @@ class Database:
     # Adds a list of entries into the filters table.
     def add_filters(self, filters_list, filter_type):
         if filter_type == self.PREFIX or filter_type == self.PHRASE or filter_type == self.SUFFIX:
-            for filter in filters_list:
+            for filter_name in filters_list:
                 sql = "SELECT name FROM filters WHERE name=? AND type_id=(SELECT rowid FROM type WHERE name=?);"
-                if not self.cursor.execute(sql, (filter, filter_type)).fetchone():
+                if not self.cursor.execute(sql, (filter_name, filter_type)).fetchone():
                     self.cursor.execute(
                         "INSERT INTO filters (name, type_id) VALUES (?, (SELECT rowid FROM type WHERE name=?));",
-                        (filter, filter_type))
+                        (filter_name, filter_type))
             self.connection.commit()
 
     def clear_database(self):
         self.cursor.executescript("DROP TABLE IF EXISTS filters;"
                                   "DROP TABLE IF EXISTS type;")
-        self.initiate()
+        self.reset_database()
 
     # Returns all filters in the database as 3 lists in a dictionary, separated by filter type.
     def get_all_filters(self):
@@ -55,7 +54,7 @@ class Database:
             self.PHRASE: [],
             self.SUFFIX: [],
         }
-        sql = "SELECT name FROM filters WHERE type_id=(SELECT rowid FROM type WHERE name=?)"
+        sql = "SELECT name FROM filters WHERE type_id=(SELECT rowid FROM type WHERE name=?) ORDER BY name"
         self.cursor.execute(sql, (self.PREFIX,))
         filters[self.PREFIX] = self.cursor.fetchall()
         self.cursor.execute(sql, (self.PHRASE,))
@@ -68,7 +67,7 @@ class Database:
     def get_filters(self, filter_type):
         filter_list = []
         if filter_type == self.PREFIX or filter_type == self.PHRASE or filter_type == self.SUFFIX:
-            sql = "SELECT name FROM filters WHERE type_id=(SELECT rowid FROM type WHERE name=?)"
+            sql = "SELECT name FROM filters WHERE type_id=(SELECT rowid FROM type WHERE name=?) ORDER BY name"
             self.cursor.execute(sql, (filter_type,))
             filter_list = self.cursor.fetchall()
         return filter_list

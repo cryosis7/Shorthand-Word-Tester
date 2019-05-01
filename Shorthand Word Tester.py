@@ -14,9 +14,6 @@ def open_dictionary():
 
 def init_dictionary():
     global dictionary
-    # dictionary_file = open('dictionary_filtered.txt', 'r')
-    # dictionary = dictionary_file.read().split('\n')
-    # dictionary_file.close()
     dictionary = db.get_dictionary()
     shuffle(dictionary)
 

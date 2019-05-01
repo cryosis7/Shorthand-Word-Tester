@@ -3,7 +3,6 @@ from tkinter.ttk import Separator
 from db_manager import Database
 
 
-# Opens a settings menu that allows editing of the filters
 def open(db_manager_instance):
     global db
     db = db_manager_instance
@@ -11,12 +10,13 @@ def open(db_manager_instance):
     settings = Toplevel()
     settings.grab_set()
     settings.title("Filter Settings")
-    settings.minsize(700, 400)
+    settings.minsize(750, 450)
 
     main_frame = Frame(settings)
 
     title_lbl = Label(main_frame, text="Add or Remove Filters", font=("Calibri", 14))
 
+    # Creates a frame that contains the three filters and their components
     filter_frame = Frame(main_frame)
     prefix_frame = create_filter_frame(filter_frame, Database.PREFIX)
     phrase_frame = create_filter_frame(filter_frame, Database.PHRASE)
@@ -28,9 +28,17 @@ def open(db_manager_instance):
     Separator(filter_frame, orient=VERTICAL).grid(column=2, row=0, sticky='wns')
     suffix_frame.grid(column=2, row=0, padx=padding_x)
 
+    # Creates a frame containing the save and cancel buttons
+    save_cancel_frame = Frame(main_frame)
+    cancel_btn = Button(save_cancel_frame, text="Cancel", width=10, command=settings.destroy)
+    save_btn = Button(save_cancel_frame, text="Save", width=10, command=save_changes)
+    cancel_btn.grid(column=0, row=0, padx=20)
+    save_btn.grid(column=1, row=0, padx=20)
+
     title_lbl.grid(column=0, row=0, pady=10)
     filter_frame.grid(column=0, row=1)
-    main_frame.place(anchor="center", relx="0.5", rely="0.45")
+    save_cancel_frame.grid(column=0, row=2, pady=30)
+    main_frame.place(anchor="center", relx="0.5", rely="0.50")
 
 
 # Creates a frame containing the components to edit the 3 types of filters.
@@ -50,14 +58,15 @@ def create_filter_frame(parent_frame, filter_type):
 
     # Delete Buttons
     delete_frame = Frame(filter_frame)
-    del_btn = Button(delete_frame, text="Delete", command=lambda: delete_filter(listbox, filter_type))
-    del_all_btn = Button(delete_frame, text="Delete All", command=lambda: delete_all_filters(listbox, filter_type))
-    del_btn.grid(column=0, row=2, padx=5)
-    del_all_btn.grid(column=1, row=2, padx=5)
+    del_btn = Button(delete_frame, text="Delete", width=7, command=lambda: delete_filter(listbox, filter_type))
+    del_all_btn = Button(delete_frame, text="Delete All", width=7,
+                         command=lambda: delete_all_filters(listbox, filter_type))
+    del_btn.grid(column=0, row=0, padx=10)
+    del_all_btn.grid(column=1, row=0, padx=10)
 
     # Entry Field and Add Button
     new_entry_frame = Frame(filter_frame)
-    add_button = Button(new_entry_frame, text="Add",
+    add_button = Button(new_entry_frame, text="Add", width=5,
                         command=lambda: add_filter_from_entry(listbox, entry, filter_type))
     entry = Entry(new_entry_frame, exportselection=0)
     entry.bind("<Return>", lambda key: add_filter_from_entry(listbox, entry, filter_type))
@@ -70,6 +79,11 @@ def create_filter_frame(parent_frame, filter_type):
     delete_frame.grid(column=0, row=2, pady=padding_y)
     new_entry_frame.grid(column=0, row=3, pady=padding_y)
     return filter_frame
+
+
+# Rewrites the list boxes filters into the database
+def save_changes():
+    print("TODO: Save Changes")
 
 
 # Empties and refills a listbox with the given filter type from the database
