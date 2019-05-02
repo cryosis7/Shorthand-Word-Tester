@@ -8,10 +8,6 @@ def open_filter_settings():
     filter_settings.open(db)
 
 
-def open_dictionary():
-    return
-
-
 def init_dictionary():
     global dictionary
     dictionary = db.get_dictionary()
@@ -35,7 +31,6 @@ def render():
     file_menu = Menu(menu_bar, tearoff=0)
     menu_bar.add_cascade(label="File", menu=file_menu)
     file_menu.add_command(label="Edit Filters", command=open_filter_settings)
-    file_menu.add_command(label="Open Dictionary...", command=open_dictionary)
 
     main_frame = Frame(root)
     instructions_lbl = Label(main_frame, text="Press spacebar to receive a random word", font=("Calibri", 10))

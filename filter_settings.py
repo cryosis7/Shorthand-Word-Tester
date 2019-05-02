@@ -34,7 +34,7 @@ def open(db_manager_instance):
     cancel_btn = Button(save_cancel_frame, text="Cancel", width=10, command=settings.destroy)
     save_btn = Button(save_cancel_frame, text="Save", width=10, command=lambda: save_changes(filter_lb_list))
     cancel_btn.grid(column=0, row=0, padx=20)
-    save_btn.grid(column=1, row=0, padx=20)
+    save_btn.grid(column=1, row=0, padx=20, state=DISABLED)
 
     title_lbl.grid(column=0, row=0, pady=10)
     filter_frame.grid(column=0, row=1)
@@ -117,3 +117,4 @@ def delete_filter(listbox):
     selection = listbox.curselection()
     if selection:
         listbox.delete(selection)
+
