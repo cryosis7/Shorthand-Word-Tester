@@ -8,12 +8,12 @@ def open(db_manager_instance):
     db = db_manager_instance
     filter_lb_list = []
 
-    settings = Toplevel()
-    settings.grab_set()
-    settings.title("Filter Settings")
-    settings.minsize(750, 450)
+    window = Toplevel()
+    window.grab_set()
+    window.title("Filter Settings")
+    window.minsize(750, 450)
 
-    main_frame = Frame(settings)
+    main_frame = Frame(window)
 
     title_lbl = Label(main_frame, text="Add or Remove Filters", font=("Calibri", 14))
 
@@ -31,10 +31,10 @@ def open(db_manager_instance):
 
     # Creates a frame containing the save and cancel buttons
     save_cancel_frame = Frame(main_frame)
-    cancel_btn = Button(save_cancel_frame, text="Cancel", width=10, command=settings.destroy)
+    cancel_btn = Button(save_cancel_frame, text="Cancel", width=10, command=window.destroy)
     save_btn = Button(save_cancel_frame, text="Save", width=10, command=lambda: save_changes(filter_lb_list))
     cancel_btn.grid(column=0, row=0, padx=20)
-    save_btn.grid(column=1, row=0, padx=20, state=DISABLED)
+    save_btn.grid(column=1, row=0, padx=20)
 
     title_lbl.grid(column=0, row=0, pady=10)
     filter_frame.grid(column=0, row=1)
